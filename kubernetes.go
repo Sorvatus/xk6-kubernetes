@@ -20,6 +20,7 @@ import (
 	"go.k6.io/k6/js/modules"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
@@ -61,7 +62,11 @@ func (obj *Kubernetes) XKubernetes(ctx *context.Context, options KubernetesOptio
 			}
 		}
 	}
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	config, err := rest.InClusterConfig()
+	//fallback to config file
+	if err != nil {
+		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+	}
 
 	if err != nil {
 		return nil, err
