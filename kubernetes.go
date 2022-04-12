@@ -2,20 +2,19 @@ package kubernetes
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 
-	"github.com/grafana/xk6-kubernetes/pkg/configmaps"
-	"github.com/grafana/xk6-kubernetes/pkg/deployments"
-	"github.com/grafana/xk6-kubernetes/pkg/ingresses"
-	"github.com/grafana/xk6-kubernetes/pkg/jobs"
-	"github.com/grafana/xk6-kubernetes/pkg/namespaces"
-	"github.com/grafana/xk6-kubernetes/pkg/nodes"
-	"github.com/grafana/xk6-kubernetes/pkg/persistentvolumeclaims"
-	"github.com/grafana/xk6-kubernetes/pkg/persistentvolumes"
-	"github.com/grafana/xk6-kubernetes/pkg/pods"
-	"github.com/grafana/xk6-kubernetes/pkg/secrets"
-	"github.com/grafana/xk6-kubernetes/pkg/services"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/configmaps"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/deployments"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/ingresses"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/jobs"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/namespaces"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/nodes"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/persistentvolumeclaims"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/persistentvolumes"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/pods"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/secrets"
+	"github.com/Sorvatus/xk6-kubernetes/pkg/services"
 
 	"go.k6.io/k6/js/modules"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -50,18 +49,15 @@ type KubernetesOptions struct {
 
 func (obj *Kubernetes) XKubernetes(ctx *context.Context, options KubernetesOptions) (*Kubernetes, error) {
 	kubeconfig := options.ConfigPath
+	// try to get config from default folder
 	if kubeconfig == "" {
-		//home := homedir.HomeDir()
-		//if home == "" {
-		//	return nil, errors.New("Home dir not found")
-		//}
-		//kubeconfig = filepath.Join(home, ".kube", "config")
-		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	} else {
-		config, err := clientcmd.BuildConfigFromFlags()
+		home := homedir.HomeDir()
+		if home != "" {
+			kubeconfig = filepath.Join(home, ".kube", "config")
+		}
 	}
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 
-	
 	if err != nil {
 		return nil, err
 	}
