@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 
 	"github.com/Sorvatus/xk6-kubernetes/pkg/configmaps"
@@ -53,7 +54,11 @@ func (obj *Kubernetes) XKubernetes(ctx *context.Context, options KubernetesOptio
 	if kubeconfig == "" {
 		home := homedir.HomeDir()
 		if home != "" {
-			kubeconfig = filepath.Join(home, ".kube", "config")
+			kubeconfig_path := filepath.Join(home, ".kube", "config")
+			_, err := os.Stat(kubeconfig_path)
+			if err == nil {
+				kubeconfig = kubeconfig_path
+			}
 		}
 	}
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
