@@ -51,14 +51,17 @@ type KubernetesOptions struct {
 func (obj *Kubernetes) XKubernetes(ctx *context.Context, options KubernetesOptions) (*Kubernetes, error) {
 	kubeconfig := options.ConfigPath
 	if kubeconfig == "" {
-		home := homedir.HomeDir()
-		if home == "" {
-			return nil, errors.New("Home dir not found")
-		}
-		kubeconfig = filepath.Join(home, ".kube", "config")
+		//home := homedir.HomeDir()
+		//if home == "" {
+		//	return nil, errors.New("Home dir not found")
+		//}
+		//kubeconfig = filepath.Join(home, ".kube", "config")
+		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	} else {
+		config, err := clientcmd.BuildConfigFromFlags()
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	
 	if err != nil {
 		return nil, err
 	}
